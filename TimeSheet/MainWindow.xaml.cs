@@ -82,7 +82,7 @@ namespace TimeSheet
             var dow = dt.DayOfWeek;
             _times.Days[dow] = Time;
 
-            dt.
+            //*** to do
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -99,7 +99,7 @@ namespace TimeSheet
             //Fail quick
             try
             {
-                _times = AllTimes.ReadData();
+                _times = AllTimes.ReadDataFromFile();
 
                 ReadDataFromPers();
             }
@@ -158,13 +158,13 @@ namespace TimeSheet
 
             WriteDataToPers();
 
-            AllTimes.WriteData(_times);
+            AllTimes.WriteDataToFile(_times);
         }
     }
     
     public class AllTimes
     {
-        public static void WriteData(AllTimes times)
+        public static void WriteDataToFile(AllTimes times)
         {
             var serializer = new JsonSerializer();
             using (StreamWriter sw = new StreamWriter(@"json.txt"))
@@ -174,7 +174,7 @@ namespace TimeSheet
             }
         }
 
-        public static AllTimes ReadData()
+        public static AllTimes ReadDataFromFile()
         {
             var serializer = new JsonSerializer();
             using (StreamReader sr = new StreamReader(@"json.txt"))
