@@ -16,6 +16,8 @@
     <Grid.RowDefinitions>
       <RowDefinition />
       <RowDefinition />
+      <RowDefinition />
+      <RowDefinition />
     </Grid.RowDefinitions>
     <Grid.ColumnDefinitions>
       <ColumnDefinition />
@@ -23,7 +25,16 @@
     </Grid.ColumnDefinitions>
 
     <TextBlock Grid.Row="0" Grid.Column="0"
-      Text="{Binding Time, ElementName=ctl}" />
+      Text="{Binding TodayTime}" />
+
+    <TextBlock Grid.Row="0" Grid.Column="1"
+      Text="{Binding TodayDelta}" />
+
+    <TextBlock Grid.Row="1" Grid.Column="0"
+      Text="{Binding ThisWeekTime}" />
+
+    <TextBlock Grid.Row="1" Grid.Column="1"
+      Text="{Binding ThisWeekDelta}" />
 
     <Button Grid.Row="1" Grid.Column="0"
       Click="OnClick">

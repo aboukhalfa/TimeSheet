@@ -29,6 +29,7 @@ namespace TimeSheet
         DispatcherTimer _timer = new DispatcherTimer();
 
         DateTime _baseTime = DateTime.MinValue;
+        DateTime _refTime = DateTime.MinValue;
 
         AllTimes _times;
 
@@ -76,6 +77,20 @@ namespace TimeSheet
             }
         }
 
+        private TimeSpan _timeForToday = TimeSpan.Zero;
+        public TimeSpan TimeForToday
+        {
+            get => _timeForToday;
+            set
+            {
+                if (value != _timeForToday)
+                {
+                    _timeForToday = value;
+                    NotifyPropertyChanged();
+                }
+            }
+        }
+
         private void UpdatePers()
         {
             var dt = DateTime.UtcNow;
@@ -83,6 +98,26 @@ namespace TimeSheet
             _times.Days[dow] = Time;
 
             //*** to do
+        }
+
+        private ViewModelData _dispatcher;
+        public ViewModelData Data
+        {
+            get
+            {
+                if (_dispatcher == null)
+                    _dispatcher = new ViewModelData(persister: new Persister());
+
+                return _dispatcher;
+            }
+            set
+            {
+                if (value != _dispatcher)
+                {
+                    _dispatcher = value;
+                    NotifyPropertyChanged();
+                }
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -107,6 +142,7 @@ namespace TimeSheet
             {
                 _times = new AllTimes();
             }
+
         }
 
         private void ReadDataFromPers()
@@ -118,9 +154,9 @@ namespace TimeSheet
 
         private void WriteDataToPers()
         {
-            _times.IsStarted = IsStarted;
-            _times.BaseTime = _baseTime;
-            _times.Time = Time;
+            //_times.IsStarted = IsStarted;
+            //_times.BaseTime = _baseTime;
+            //_times.Time = Time;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -132,7 +168,11 @@ namespace TimeSheet
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += OnTimerTick;            
+            _timer.Tick += OnTimerTick;
+
+            DataContext = Data;
+            if (Data.IsStarted != IsStarted)
+                OnClick(this, null);
         }
 
         private void OnTimerTick(object sender, EventArgs e)
@@ -141,6 +181,8 @@ namespace TimeSheet
             dt = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
             Time += dt - _baseTime;
             _baseTime = dt;
+
+            _dispatcher.Tick();
         }
 
         private void OnClick(object sender, RoutedEventArgs e)
@@ -150,10 +192,12 @@ namespace TimeSheet
             if (IsStarted)
             {
                 _timer.Start();
+                _dispatcher.Start();
             }
             else
             {
                 _timer.Stop();
+                _dispatcher.Stop();
             }
 
             WriteDataToPers();
