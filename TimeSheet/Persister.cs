@@ -16,45 +16,30 @@ namespace TimeSheet
 
     public class Persister : IPersister
     {
-        internal class Data
+        public class Data
         {
-            internal Dictionary<DayOfWeek, TimeSpan> DaysOfThisWeekTimes { get; set; }
-            internal bool IsStarted { get; set; }
-
-            internal DateTime RefTime { get; set; }
+            public Dictionary<DayOfWeek, TimeSpan> DaysOfThisWeekTimes { get; set; }
+            public bool IsStarted { get; set; }            
+            public DateTime RefTime { get; set; }
         }
 
         public void WriteDataToFile(Dictionary<DayOfWeek, TimeSpan> daysOfThisWeekTimes, bool isStarted, DateTime refTime)
         {
-            Data data = new Data { DaysOfThisWeekTimes = daysOfThisWeekTimes, IsStarted = isStarted, RefTime = refTime };
+            if (!daysOfThisWeekTimes.Values.Any())
+                daysOfThisWeekTimes.Add(DateTime.UtcNow.DayOfWeek, TimeSpan.Zero);
 
-            //var serializer = new JsonSerializer();
-            //using (StreamWriter sw = new StreamWriter(@"jsonData.txt"))
-            //using (JsonWriter writer = new JsonTextWriter(sw))
-            //{
-            //    serializer.Serialize(writer, data);
-            //    //serializer.Serialize(writer, refTime);
-            //    //serializer.Serialize(writer, daysOfThisWeekTimes);
-            //}
+            Data data = new Data { DaysOfThisWeekTimes = daysOfThisWeekTimes, IsStarted = isStarted, RefTime = refTime };         
 
             using (StreamWriter sw = new StreamWriter(@"jsonData.txt"))
             {
-                var s = JsonConvert.SerializeObject(data, Formatting.Indented);
+
+                var s = JsonConvert.SerializeObject(data);
                 sw.Write(s);
             }
         }
 
         public (Dictionary<DayOfWeek, TimeSpan> daysOfThisWeekTimes, bool isStarted, DateTime refTime) ReadDataFromFile()
         {
-            //var serializer = new JsonSerializer();
-            //using (StreamReader sr = new StreamReader(@"jsonData.txt"))
-            //using (JsonReader reader = new JsonTextReader(sr))
-            //{
-            //    var data = serializer.Deserialize<Data>(reader);
-               
-            //    return (data.DaysOfThisWeekTimes, data.IsStarted, data.RefTime);
-            //}
-
             using (StreamReader sr = new StreamReader(@"jsonData.txt"))
             {
                 var s = sr.ReadToEnd();

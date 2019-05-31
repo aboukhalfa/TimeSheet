@@ -156,7 +156,7 @@ namespace UnitTestProject1
         public async Task StartedShouldHaveCorrectStats()
         {
             var persister = new Persister();
-            var vm = new ViewModelData(persister:persister);
+            var vm = new ViewModelData();
 
             vm.Start(5.Hours());
             vm.Start();
@@ -169,7 +169,7 @@ namespace UnitTestProject1
         public void TickShouldRaiseEvents()
         {
             var persister = new Persister();
-            var vm = new ViewModelData(persister: persister);
+            var vm = new ViewModelData();
             var pnChanged = new List<string>();
             vm.PropertyChanged += (s, e) =>
             {
@@ -182,6 +182,19 @@ namespace UnitTestProject1
             pnChanged.Should().Contain("ThisWeekTime");
             pnChanged.Should().Contain("TodayDelta");
             pnChanged.Should().Contain("ThisWeekDelta");
+        }
+
+
+        [TestMethod]
+        public async Task ConsecutiveStartsDontChangeStartTime()
+        {
+            var vm = new ViewModelData();
+            vm.Start();
+            var startTime = vm.StartTime;
+            await Task.Delay(TimeSpan.FromSeconds(5));
+            vm.Start();
+
+            vm.StartTime.Should().Be(startTime);
         }
     }
 }

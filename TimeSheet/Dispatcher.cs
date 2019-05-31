@@ -101,7 +101,7 @@ namespace TimeSheet
                 {
                 }
             }
-        }
+        }    
 
         // Notify all
         // Assume 8h/day 40h/week
@@ -120,8 +120,12 @@ namespace TimeSheet
             {
                 var dt = DateTime.UtcNow;
                 dt = new DateTime(dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
-                StartTime = dt;
-                IsStarted = true;
+
+                if (!IsStarted)
+                {
+                    StartTime = dt;
+                    IsStarted = true;
+                }
             }
 
             if (_persister != null)
